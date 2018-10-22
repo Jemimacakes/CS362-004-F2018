@@ -46,9 +46,9 @@ int main()
 	}
 
 	// ----------- TEST 1: 3 Copper Pieces --------------
-	printf("TEST 1: 3 Copper Pieces\n");
+	printf("\nTEST 1: 3 Copper Pieces\n");
 	updateCoins(G.whoseTurn, &G, 0);
-	printf("Updated Coin Value: %d. Should be 3\n", G.coins);
+	printf("Updated Coin Value: %d [Expect 3]\n", G.coins);
 	if(myAssert(G.coins, 3, eq, 0))
 	{
 		printf("TEST PASSED\n");
@@ -78,9 +78,9 @@ int main()
 	}
 
 	// ----------- TEST 2: 6 Copper Pieces, 15 Silver Pieces --------------
-	printf("TEST 2: 6 Copper Pieces, 15 Silver Pieces\n");
+	printf("\nTEST 2: 6 Copper Pieces, 15 Silver Pieces\n");
 	updateCoins(G.whoseTurn, &G, 0);
-	printf("Updated Coin Value: %d. Should be 36\n", G.coins);
+	printf("Updated Coin Value: %d [Expect 36]\n", G.coins);
 	if(myAssert(G.coins, 36, eq, 0))
 	{
 		printf("TEST PASSED\n");
@@ -114,9 +114,9 @@ int main()
 	}
 
 	// ----------- TEST 3: 1 Copper Pieces, 9 Silver Pieces, 1 Gold Piece --------------
-	printf("TEST 3: 1 Copper Pieces, 9 Silver Pieces, 1 Gold Piece\n");
+	printf("\nTEST 3: 1 Copper Pieces, 9 Silver Pieces, 1 Gold Piece\n");
 	updateCoins(G.whoseTurn, &G, 0);
-	printf("Updated Coin Value: %d. Should be 22\n", G.coins);
+	printf("Updated Coin Value: %d [Expect 22]\n", G.coins);
 	if(myAssert(G.coins, 22, eq, 0))
 	{
 		printf("TEST PASSED\n");
@@ -127,16 +127,16 @@ int main()
 	}
 
 	// ----------- TEST 4: 1 Copper Pieces, 9 Silver Pieces, 1 Gold Piece, 100 Bonus Coins --------------
-	printf("TEST 4: 1 Copper Pieces, 9 Silver Pieces, 1 Gold Piece, 100 Bonus Coins\n");
+	printf("\nTEST 4: 1 Copper Pieces, 9 Silver Pieces, 1 Gold Piece, 100 Bonus Coins\n");
 	updateCoins(G.whoseTurn, &G, 100);
-	printf("Updated Coin Value: %d. Should be 122\n", G.coins);
+	printf("Updated Coin Value: %d [Expect 122]\n", G.coins);
 	if(myAssert(G.coins, 122, eq, 0))
 	{
-		printf("TEST PASSED\n");
+		printf("TEST PASSED\n\n");
 	}
 	else
 	{
-		printf("TEST FAILED\n");
+		printf("TEST FAILED\n\n");
 	}
 }
 

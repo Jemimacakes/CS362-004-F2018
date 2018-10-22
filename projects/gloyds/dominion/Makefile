@@ -11,7 +11,7 @@ interface.o: interface.h interface.c
 
 playdom: dominion.o playdom.c
 	gcc -o playdom playdom.c -g dominion.o rngs.o $(CFLAGS)
-# To run playdom you need to entere: ./playdom <any integer number> like ./playdom 10*/
+	# To run playdom you need to entere: ./playdom <any integer number> like ./playdom 10*/
 
 player: player.c interface.o
 	gcc -o player player.c -g  dominion.o rngs.o interface.o $(CFLAGS)
@@ -38,17 +38,23 @@ drawcardtestresults: testDrawCard
 unittest1: unittest1.c dominion.o rngs.o
 	gcc -o unittest1 -g unittest1.c dominion.o rngs.o $(CFLAGS)
 
-unittest2: unittest2.c dominion.c rngs.o
-	gcc -o unittest2 -g unittest2.c dominion.c rngs.o $(CFLAGS)
+unittest2: unittest2.c dominion.o rngs.o
+	gcc -o unittest2 -g unittest2.c dominion.o rngs.o $(CFLAGS)
 
-unittestresults: unittest1 unittest2
+unittest3: unittest3.c dominion.o rngs.o
+	gcc -o unittest3 -g unittest3.c dominion.o rngs.o $(CFLAGS)
+
+unittestresults: unittest1 unittest2 unittest3
 	./unittest1 &> unittestresults.out
 	./unittest2 &>> unittestresults.out
-	gcov dominion.c >> unittestresults.out
+	./unittest3 &>> unittestresults.out
+	echo -e "----------------- gcov results ----------------\n" >> unittestresults.out
+	gcov -b dominion.c >> unittestresults.out
+	echo -e "----------------- dominion.c.gcno ----------------\n" >> unittestresults.out
 	cat dominion.c.gcov >> unittestresults.out
 
 # All and Clean
 all: playdom player
 
 clean:
-	rm -f *.o playdom.exe playdom player player.exe unittest1 unittest2 *.gcov *.gcda *.gcno *.so *.out testDrawCard testDrawCard.exe
+	rm -f *.o playdom.exe playdom player player.exe unittest1 unittest2 unittest3 *.gcov *.gcda *.gcno *.so *.out testDrawCard testDrawCard.exe

@@ -112,8 +112,14 @@ int main()
 	}
 	
 	// ----------- TEST 1: Cards located in deck only --------------
-	printf("TEST 1: Cards located in deck only\n");
+	printf("\nTEST 1: Cards located in deck only\n");
+	
+	// Call fullDeckCount to get number of cards in the deck
 	count = fullDeckCount(G.whoseTurn, adventurer, &G);
+
+	// Print test results
+	printf("Card Count: %d [Expect 2]\n", count);
+
 	if(myAssert(count, 2, eq, 0))
 	{
 		printf("TEST PASSED\n");
@@ -124,8 +130,14 @@ int main()
 	}
 
 	// ----------- TEST 2: Cards located in hand only --------------
-	printf("TEST 2: Cards located in hand only\n");
+	printf("\nTEST 2: Cards located in hand only\n");
+
+	// Call fullDeckCount to get number of cards in the deck
 	count = fullDeckCount(G.whoseTurn, minion, &G);
+	
+	// Print test results
+	printf("Card Count: %d [Expect 3]\n", count);
+
 	if(myAssert(count, 3, eq, 0))
 	{
 		printf("TEST PASSED\n");
@@ -136,8 +148,14 @@ int main()
 	}
 
 	// ----------- TEST 3: Cards located in discard only --------------
-	printf("TEST 3: Cards located in discard only\n");
+	printf("\nTEST 3: Cards located in discard only\n");
+	
+	// Call fullDeckCount to get number of cards in the deck
 	count = fullDeckCount(G.whoseTurn, cutpurse, &G);
+	
+	// Print test results
+	printf("Card Count: %d [Expect 2]\n", count);
+
 	if(myAssert(count, 2, eq, 0))
 	{
 		printf("TEST PASSED\n");
@@ -148,8 +166,14 @@ int main()
 	}
 	
 	// ----------- TEST 4: Cards located in both deck and hand --------------
-	printf("TEST 4: Cards located in both deck and hand\n");
+	printf("\nTEST 4: Cards located in both deck and hand\n");
+	
+	// Call fullDeckCount to get number of cards in the deck
 	count = fullDeckCount(G.whoseTurn, embargo, &G);
+	
+	// Print test results
+	printf("Card Count: %d [Expect 3]\n", count);
+	
 	if(myAssert(count, 3, eq, 0))
 	{
 		printf("TEST PASSED\n");
@@ -160,8 +184,14 @@ int main()
 	}
 	
 	// ----------- TEST 5: Cards located in both deck and discard --------------
-	printf("TEST 5: Cards located in both deck and discard\n");
+	printf("\nTEST 5: Cards located in both deck and discard\n");
+	
+	// Call fullDeckCount to get number of cards in the deck
 	count = fullDeckCount(G.whoseTurn, mine, &G);
+	
+	// Print test results
+	printf("Card Count: %d [Expect 4]\n", count);
+	
 	if(myAssert(count, 4, eq, 0))
 	{
 		printf("TEST PASSED\n");
@@ -172,8 +202,14 @@ int main()
 	}
 	
 	// ----------- TEST 6: Cards located in both hand and discard --------------
-	printf("TEST 6: Cards located in both hand and discard\n");
+	printf("\nTEST 6: Cards located in both hand and discard\n");
+	
+	// Call fullDeckCount to get number of cards in the deck
 	count = fullDeckCount(G.whoseTurn, village, &G);
+	
+	// Print test results
+	printf("Card Count: %d [Expect 5]\n", count);
+	
 	if(myAssert(count, 5, eq, 0))
 	{
 		printf("TEST PASSED\n");
@@ -184,15 +220,21 @@ int main()
 	}
 	
 	// ----------- TEST 7: Cards located in all piles --------------
-	printf("TEST 7: Cards located in all piles\n");
+	printf("\nTEST 7: Cards located in all piles\n");
+	
+	// Call fullDeckCount to get number of cards in the deck
 	count = fullDeckCount(G.whoseTurn, sea_hag, &G);
+	
+	// Print test results
+	printf("Card Count: %d [Expect 6]\n", count);
+	
 	if(myAssert(count, 6, eq, 0))
 	{
-		printf("TEST PASSED\n");
+		printf("TEST PASSED\n\n");
 	}
 	else
 	{
-		printf("TEST FAILED\n");
+		printf("TEST FAILED\n\n");
 	}
 }
 
