@@ -38,7 +38,10 @@ drawcardtestresults: testDrawCard
 unittest1: unittest1.c dominion.o rngs.o
 	gcc -o unittest1 -g unittest1.c dominion.o rngs.o $(CFLAGS)
 
-unittestresults: unittest1
+unittest2: unittest2.c dominion.c rngs.o
+	gcc -o unittest2 -g unittest2.c dominion.c rngs.o $(CFLAGS)
+
+unittestresults: unittest1 unittest2
 	./unittest1 &> unittestresults.out
 	./unittest2 &>> unittestresults.out
 	gcov dominion.c >> unittestresults.out
