@@ -24,7 +24,6 @@
 
 int main()
 {
-	int i;
 	int ret, oldCount;
 	int seed = 1000;
 	int numPlayers = 2;
