@@ -122,7 +122,7 @@ int main()
 
 	// Assert if test passed
 	if(myAssert(testG.handCount[thisPlayer], G.handCount[thisPlayer] - discarded - trashed, eq, 0)
-		&& myAssert(testG.discardCount[thisPlayer], G.deckCount[thisPlayer] + gainedToDiscard + discarded, eq, 0)
+		&& myAssert(testG.discardCount[thisPlayer], G.discardCount[thisPlayer] + gainedToDiscard + discarded, eq, 0)
 		&& myAssert(testG.supplyCount[adventurer], G.supplyCount[adventurer] - gainedToDiscard, eq, 0)
 		&& myAssert(actualReturn, expectedReturn, eq, 0))
 	{
