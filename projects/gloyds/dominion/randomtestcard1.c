@@ -61,10 +61,10 @@ int main()
 {
 	int i, test;
 	int randomNumPlayers, randomNumCards, randomCard, randomPlayer; // Random counts
-	int numPlayedCard, numTreasure; // Deck requirements
+	int numPlayedCard; // Deck requirements
 	int seed = 1000;
 	int choice1, choice2, choice3, handPos, bonus;
-	int playedCardPos, offset;
+	int playedCardPos;
 	int drawnToHand, discardedFromHand, newCoins, trashedCards, choice2Replacement, choice3Replacement;
 	struct gameState G, testG;
 	int k[10] = {adventurer, embargo, village, minion, mine, steward,
@@ -114,8 +114,6 @@ int main()
 		}while(numPlayedCard < 1); // Loop until there are enough of the tested card
 
 		// Fill random player's deck and discard piles with a random number of random cards
-		numTreasure = 0;
-
 		// Clear both piles
 		G.deckCount[randomPlayer] = 0;
 		G.discardCount[randomPlayer] = 0;
