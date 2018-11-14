@@ -1,5 +1,5 @@
 /*
- * cardtest2.c
+ * randomtestadventurer.c
  * Based on provided cardtest4.c
  */
 
