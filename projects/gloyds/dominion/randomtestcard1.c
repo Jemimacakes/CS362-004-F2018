@@ -12,8 +12,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define TESTCARD "adventurer"
-#define NUMTESTS 1000000
+#define TESTCARD "steward"
+#define NUMTESTS 10000
 
 int chooseRandomNumPlayers()
 {
@@ -45,6 +45,18 @@ int chooseRandomCard(int cards[])
 		return cardIndex;
 }
 
+int determineReplacement(struct gameState G, int currentPlayer, int cardPos, int offset)
+{
+	if(cardPos >= G.handCount[currentPlayer] - offset - 1)
+	{
+		return -1;
+	}
+	else
+	{
+		return G.hand[currentPlayer][G.handCount[currentPlayer] - offset - 1];
+	}
+}
+
 int main()
 {
 	int i, test;
@@ -52,9 +64,10 @@ int main()
 	int numPlayedCard, numTreasure; // Deck requirements
 	int seed = 1000;
 	int choice1, choice2, choice3, handPos, bonus;
-	int drawnToHand, discardedFromHand, discardedFromDeck;
+	int playedCardPos, offset;
+	int drawnToHand, discardedFromHand, newCoins, trashedCards, choice2Replacement, choice3Replacement;
 	struct gameState G, testG;
-	int k[10] = {adventurer, embargo, village, minion, mine, cutpurse,
+	int k[10] = {adventurer, embargo, village, minion, mine, steward,
 		sea_hag, tribute, smithy, council_room};
 
 	// Seed random number generator
@@ -92,102 +105,138 @@ int main()
 				G.handCount[randomPlayer]++;
 
 				// Add to tested card count if applicable
-				if(randomCard == adventurer)
+				if(randomCard == steward)
 				{
 					numPlayedCard++;
+					playedCardPos = i;
 				}
 			}
 		}while(numPlayedCard < 1); // Loop until there are enough of the tested card
 
-		//printf("Random num cards in hand: %d\n", randomNumCards);
-
 		// Fill random player's deck and discard piles with a random number of random cards
 		numTreasure = 0;
-		do
+
+		// Clear both piles
+		G.deckCount[randomPlayer] = 0;
+		G.discardCount[randomPlayer] = 0;
+
+		// Choose a random number of cards to generate, and do so
+		randomNumCards = chooseRandomNumCards(MAX_DECK);
+		for(i = 0; i < randomNumCards; i++)
 		{
-			// Clear both piles
-			G.deckCount[randomPlayer] = 0;
-			G.discardCount[randomPlayer] = 0;
-
-			// Choose a random number of cards to generate, and do so
-			randomNumCards = chooseRandomNumCards(MAX_DECK);
-			for(i = 0; i < randomNumCards; i++)
+			// Generate random card, and add it to a random pile
+			randomCard = chooseRandomCard(k);
+			if(rand() % 2)
 			{
-				// Generate random card, and add it to a random pile
-				randomCard = chooseRandomCard(k);
-				//printf("Random Card: %d\n", randomCard);
-				if(rand() % 2)
-				{
-					G.deck[randomPlayer][G.deckCount[randomPlayer]] = randomCard;
-					G.deckCount[randomPlayer]++;
-
-					// Add to treasure count if applicable else add to dicarded count for cards "in the way"
-					if(randomCard == copper || randomCard == silver || randomCard == gold)
-					{
-						numTreasure++;
-						//printf("Num Treasure: %d\n", numTreasure);
-					}
-				}
-				else
-				{
-					G.discard[randomPlayer][G.discardCount[randomPlayer]] = randomCard;
-					G.discardCount[randomPlayer]++;
-				}
+				G.deck[randomPlayer][G.deckCount[randomPlayer]] = randomCard;
+				G.deckCount[randomPlayer]++;
 			}
-		}while(numTreasure < 2); // Loop until there is enough treasure cards in the deck
+			else
+			{
+				G.discard[randomPlayer][G.discardCount[randomPlayer]] = randomCard;
+				G.discardCount[randomPlayer]++;
+			}
+		}
 
-		//printf("Random num cards in deck: %d\n", randomNumCards);
 		// copy the game state to a test case
 		memcpy(&testG, &G, sizeof(struct gameState));
 
 		// Play the card
-		choice1 = 0;
-		choice2 = 0;
-		choice3 = 0;
-		handPos = 0;
+		choice1 = rand() % 3;
+		choice2 = G.handCount[randomPlayer] == 0 ? 0 : rand() % G.handCount[randomPlayer];
+		choice3 = G.handCount[randomPlayer] == 0 ? 0 : rand() % G.handCount[randomPlayer];
+		handPos = playedCardPos;
 		bonus = 0;
-		cardEffect(adventurer, choice1, choice2, choice3, &testG, handPos, &bonus);
+		cardEffect(steward, choice1, choice2, choice3, &testG, handPos, &bonus);
 
-		// Set expectations
-		drawnToHand = 2; // Drew +2 new cards to hand from deck
-		discardedFromHand = 1; // Discarded adventurer itself
-
-		// Count all the cards at the end of the deck that are not treasure until 2 treasure is found
-		numTreasure = 0;
-		discardedFromDeck = 0;
-		for(i = G.deckCount[randomPlayer] - 1; i >= 0; i--)
+		if(choice1 == 1)
 		{
-			if(G.deck[randomPlayer][i] == copper || G.deck[randomPlayer][i] == silver || G.deck[randomPlayer][i] == gold)
-			{
-				numTreasure++;
+			// Set expectations
+			drawnToHand = 2; // Drew +2 new cards to hand from deck
+			discardedFromHand = 1; // Discarded steward itself
+			newCoins = 0;
 
-				if(numTreasure >= 2)
-				{
-					break;
-				}
+			// Print the results
+			printf("Hand Count: %d [Expect %d]\n", testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand);
+			printf("Deck Count: %d [Expect %d]\n", 	testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand);
+			printf("Discard Count: %d [Expect %d]\n", 	testG.discardCount[randomPlayer], G.discardCount[randomPlayer] + discardedFromHand);
+			printf("Coin Count: %d [Expect %d]\n", testG.coins, G.coins + newCoins);
+
+			// Assert if test passed
+			if(myAssert(testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand, eq, 0)
+				&& myAssert(testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand, eq, 0)
+				&& myAssert(testG.discardCount[randomPlayer], G.deckCount[randomPlayer] + discardedFromHand, eq, 0)
+				&& myAssert(testG.coins, G.coins + newCoins, eq, 0))
+			{
+				printf("TEST PASSED\n\n");
 			}
 			else
 			{
-				discardedFromDeck++;
+				printf("TEST FAILED\n\n");
 			}
 		}
-
-		// Print the results
-		printf("Hand Count: %d [Expect %d]\n", testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand);
-		printf("Deck Count: %d [Expect %d]\n", 	testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand - discardedFromDeck);
-		printf("Discard Count: %d [Expect %d]\n", 	testG.discardCount[randomPlayer], G.discardCount[randomPlayer] + discardedFromHand + discardedFromDeck);
-
-
-		// Assert if test passed
-		if(myAssert(testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand, eq, 0)
-			&& myAssert(testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand - discardedFromDeck, eq, 0)
-			&& myAssert(testG.discardCount[randomPlayer], G.deckCount[randomPlayer] + discardedFromHand + discardedFromDeck, eq, 0))
+		else if(choice1 == 2)
 		{
-			printf("TEST PASSED\n");
+			// Set expectations
+			drawnToHand = 0; // Draw no new cards
+			discardedFromHand = 1; // Discard steward itself
+			newCoins = 2; // Gain +2 coins
+
+			// Print the results
+			printf("Hand Count: %d [Expect %d]\n", testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand);
+			printf("Deck Count: %d [Expect %d]\n", 	testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand);
+			printf("Discard Count: %d [Expect %d]\n", 	testG.discardCount[randomPlayer], G.discardCount[randomPlayer] + discardedFromHand);
+			printf("Coin Count: %d [Expect %d]\n", testG.coins, G.coins + newCoins);
+
+			// Assert if test passed
+			if(myAssert(testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand, eq, 0)
+				&& myAssert(testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand, eq, 0)
+				&& myAssert(testG.discardCount[randomPlayer], G.deckCount[randomPlayer] + discardedFromHand, eq, 0)
+				&& myAssert(testG.coins, G.coins + newCoins, eq, 0))
+			{
+				printf("TEST PASSED\n\n");
+			}
+			else
+			{
+				printf("TEST FAILED\n\n");
+			}
 		}
 		else
 		{
-			printf("TEST FAILED\n");
+			// Set expectations
+			drawnToHand = 0; // Draw no new cards
+			discardedFromHand = 1; // Discard steward itself
+			newCoins = 0;
+			trashedCards = 2; // Trash two cards
+
+			// Determine which cards should replace the removed cards
+			choice2Replacement = determineReplacement(G, randomPlayer, choice2, 0);
+			choice3Replacement = determineReplacement(G, randomPlayer, choice3, 1);
+
+			// Print the results
+			printf("Hand Count: %d [Expect %d]\n", testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand - trashedCards);
+			printf("Deck Count: %d [Expect %d]\n", 	testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand);
+			printf("Discard Count: %d [Expect %d]\n", 	testG.discardCount[randomPlayer], G.discardCount[randomPlayer] + discardedFromHand);
+			printf("Coin Count: %d [Expect %d]\n", testG.coins, G.coins + newCoins);
+			printf("Choice2 Replacement: %d [Expect %d]\n", 	choice2 >= G.handCount[randomPlayer] - 1 ? -1 : testG.hand[randomPlayer][choice2],
+															choice2Replacement);
+			printf("Choice3 Replacement: %d [Expect %d]\n", 	choice3 >= G.handCount[randomPlayer] - 2 ? -1 : testG.hand[randomPlayer][choice3],
+															choice3Replacement);
+
+			// Assert if test passed
+			if(myAssert(testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand, eq, 0)
+				&& myAssert(testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand, eq, 0)
+				&& myAssert(testG.discardCount[randomPlayer], G.deckCount[randomPlayer] + discardedFromHand, eq, 0)
+				&& myAssert(testG.coins, G.coins + newCoins, eq, 0)
+				&& myAssert(choice2 >= G.handCount[randomPlayer] - 1 ? -1 : testG.hand[randomPlayer][choice2], choice2Replacement, eq, 0)
+				&& myAssert(choice3 >= G.handCount[randomPlayer] - 2 ? -1 : testG.hand[randomPlayer][choice3], choice3Replacement, eq, 0))
+			{
+				printf("TEST PASSED\n\n");
+			}
+			else
+			{
+				printf("TEST FAILED\n\n");
+			}
 		}
 	}
 
