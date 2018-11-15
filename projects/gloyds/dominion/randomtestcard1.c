@@ -163,7 +163,7 @@ int main()
 			// Assert if test passed
 			if(myAssert(testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand, eq, 0)
 				&& myAssert(testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand, eq, 0)
-				&& myAssert(testG.discardCount[randomPlayer], G.deckCount[randomPlayer] + discardedFromHand, eq, 0)
+				&& myAssert(testG.discardCount[randomPlayer], G.discardCount[randomPlayer] + discardedFromHand, eq, 0)
 				&& myAssert(testG.coins, G.coins + newCoins, eq, 0))
 			{
 				printf("TEST PASSED\n\n");
@@ -189,7 +189,7 @@ int main()
 			// Assert if test passed
 			if(myAssert(testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand, eq, 0)
 				&& myAssert(testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand, eq, 0)
-				&& myAssert(testG.discardCount[randomPlayer], G.deckCount[randomPlayer] + discardedFromHand, eq, 0)
+				&& myAssert(testG.discardCount[randomPlayer], G.discardCount[randomPlayer] + discardedFromHand, eq, 0)
 				&& myAssert(testG.coins, G.coins + newCoins, eq, 0))
 			{
 				printf("TEST PASSED\n\n");
@@ -224,7 +224,7 @@ int main()
 			// Assert if test passed
 			if(myAssert(testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand, eq, 0)
 				&& myAssert(testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand, eq, 0)
-				&& myAssert(testG.discardCount[randomPlayer], G.deckCount[randomPlayer] + discardedFromHand, eq, 0)
+				&& myAssert(testG.discardCount[randomPlayer], G.discardCount[randomPlayer] + discardedFromHand, eq, 0)
 				&& myAssert(testG.coins, G.coins + newCoins, eq, 0)
 				&& myAssert(choice2 >= G.handCount[randomPlayer] - 1 ? -1 : testG.hand[randomPlayer][choice2], choice2Replacement, eq, 0)
 				&& myAssert(choice3 >= G.handCount[randomPlayer] - 2 ? -1 : testG.hand[randomPlayer][choice3], choice3Replacement, eq, 0))

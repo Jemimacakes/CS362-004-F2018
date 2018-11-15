@@ -1,5 +1,5 @@
 /*
- * randomtestadventurer.c
+ * randomtestcard2.c
  * Based on provided cardtest4.c
  */
 
@@ -12,8 +12,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define TESTCARD "adventurer"
-#define NUMTESTS 1000000
+#define TESTCARD "treasure_map"
+#define NUMTESTS 5
 
 int chooseRandomNumPlayers()
 {
@@ -49,13 +49,13 @@ int main()
 {
 	int i, test;
 	int randomNumPlayers, randomNumCards, randomCard, randomPlayer; // Random counts
-	int numPlayedCard, numTreasure; // Deck requirements
+	int numPlayedCard, numGold; // Deck requirements
 	int seed = 1000;
 	int choice1, choice2, choice3, handPos, bonus;
-	int playedCardPos;
-	int drawnToHand, discardedFromHand, discardedFromDeck;
+	int playedCardPos, returnValue;
+	int drawnToDeck, trashedCards, expectedReturnValue;
 	struct gameState G, testG;
-	int k[10] = {adventurer, embargo, village, minion, mine, cutpurse,
+	int k[10] = {adventurer, embargo, village, minion, mine, treasure_map,
 		sea_hag, tribute, smithy, council_room};
 
 	// Seed random number generator
@@ -74,7 +74,7 @@ int main()
 
 		// Choose a random player
 		randomPlayer = chooseRandomPlayer(randomNumPlayers);
-		G.whoseTurn=randomPlayer;
+		G.whoseTurn = randomPlayer;
 
 		// Fill random player's hand with random number of random cards
 		numPlayedCard = 0;
@@ -92,17 +92,26 @@ int main()
 				G.hand[randomPlayer][i] = randomCard;
 				G.handCount[randomPlayer]++;
 
-				// Add to tested card count if applicable
-				if(randomCard == adventurer)
+				// Treasure map special cases
+				if(randomCard == treasure_map)
 				{
-					numPlayedCard++;
-					playedCardPos = i;
+					// 9/10 chance that treasure_maps will be discarded
+					if(rand() % 10 > 0)
+					{
+						G.handCount[randomPlayer]--;
+						i--;
+					}
+					else // Add to played card count and track position of last drawn
+					{
+						numPlayedCard++;
+						playedCardPos = i;
+					}
 				}
 			}
 		}while(numPlayedCard < 1); // Loop until there are enough of the tested card
 
 		// Fill random player's deck and discard piles with a random number of random cards
-		numTreasure = 0;
+		numGold = 0;
 		do
 		{
 			// Clear both piles
@@ -121,9 +130,9 @@ int main()
 					G.deckCount[randomPlayer]++;
 
 					// Add to treasure count if applicable else add to dicarded count for cards "in the way"
-					if(randomCard == copper || randomCard == silver || randomCard == gold)
+					if(randomCard == gold)
 					{
-						numTreasure++;
+						numGold++;
 					}
 				}
 				else
@@ -132,7 +141,7 @@ int main()
 					G.discardCount[randomPlayer]++;
 				}
 			}
-		}while(numTreasure < 2); // Loop until there is enough treasure cards in the deck
+		}while(numGold < 4); // Loop until there is enough gold cards in the deck
 
 		// copy the game state to a test case
 		memcpy(&testG, &G, sizeof(struct gameState));
@@ -143,42 +152,38 @@ int main()
 		choice3 = 0;
 		handPos = playedCardPos;
 		bonus = 0;
-		cardEffect(adventurer, choice1, choice2, choice3, &testG, handPos, &bonus);
+		returnValue = cardEffect(treasure_map, choice1, choice2, choice3, &testG, handPos, &bonus);
 
 		// Set expectations
-		drawnToHand = 2; // Drew +2 new cards to hand from deck
-		discardedFromHand = 1; // Discarded adventurer itself
-
-		// Count all the cards at the end of the deck that are not treasure until 2 treasure is found
-		numTreasure = 0;
-		discardedFromDeck = 0;
-		for(i = G.deckCount[randomPlayer] - 1; i >= 0; i--)
+		// If there were at least 2 treasure maps
+		if(numPlayedCard >= 2)
 		{
-			if(G.deck[randomPlayer][i] == copper || G.deck[randomPlayer][i] == silver || G.deck[randomPlayer][i] == gold)
-			{
-				numTreasure++;
-
-				if(numTreasure >= 2)
-				{
-					break;
-				}
-			}
-			else
-			{
-				discardedFromDeck++;
-			}
+			drawnToDeck = 4; // Drew +2 new gold cards to hand from supply
+			trashedCards = 2; // Trashed both treasure maps
+			expectedReturnValue = 1; // Return success
+		}
+		else
+		{
+			drawnToDeck = 0; // Dont' draw anything
+			trashedCards = 0; // Don't trash anything
+			expectedReturnValue = -1; // Return error
 		}
 
 		// Print the results
-		printf("Hand Count: %d [Expect %d]\n", testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand);
-		printf("Deck Count: %d [Expect %d]\n", 	testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand - discardedFromDeck);
-		printf("Discard Count: %d [Expect %d]\n", 	testG.discardCount[randomPlayer], G.discardCount[randomPlayer] + discardedFromHand + discardedFromDeck);
+		printf("Number of drawn Treasure Maps: %d\n", numPlayedCard);
+		printf("Hand Count: %d [Expect %d]\n", testG.handCount[randomPlayer], G.handCount[randomPlayer] - trashedCards);
+		printf("Deck Count: %d [Expect %d]\n", 	testG.deckCount[randomPlayer], G.deckCount[randomPlayer] + drawnToDeck);
+		printf("Discard Count: %d [Expect %d]\n", 	testG.discardCount[randomPlayer], G.discardCount[randomPlayer]);
+		printf("Gold Supply Count: %d [Expect %d]\n", 	testG.supplyCount[gold], G.supplyCount[gold] - drawnToDeck);
+		printf("Return Value: %d [Expect %d]\n", 	returnValue, expectedReturnValue);
 
 
 		// Assert if test passed
-		if(myAssert(testG.handCount[randomPlayer], G.handCount[randomPlayer] + drawnToHand - discardedFromHand, eq, 0)
-			&& myAssert(testG.deckCount[randomPlayer], G.deckCount[randomPlayer] - drawnToHand - discardedFromDeck, eq, 0)
-			&& myAssert(testG.discardCount[randomPlayer], G.discardCount[randomPlayer] + discardedFromHand + discardedFromDeck, eq, 0))
+		if(myAssert(testG.handCount[randomPlayer], G.handCount[randomPlayer] - trashedCards, eq, 0)
+			&& myAssert(testG.deckCount[randomPlayer], G.deckCount[randomPlayer] + drawnToDeck, eq, 0)
+			&& myAssert(testG.discardCount[randomPlayer], G.discardCount[randomPlayer], eq, 0)
+			&& myAssert(testG.supplyCount[gold], G.supplyCount[gold] - drawnToDeck, eq, 0)
+			&& myAssert(returnValue, expectedReturnValue, eq, 0))
 		{
 			printf("TEST PASSED\n\n");
 		}
