@@ -46,8 +46,8 @@ randomtestcard2: randomtestcard2.c dominion.o rngs.o
 
 randomtestresults: randomtestadventurer randomtestcard1 randomtestcard2
 	./randomtestadventurer &> randomtestresults.out
-	./randomtestcard1 &> randomtestresults.out
-	./randomtestcard2 &> randomtestresults.out
+	./randomtestcard1 &>> randomtestresults.out
+	./randomtestcard2 &>> randomtestresults.out
 	echo -e "----------------- gcov results ----------------\n" >> randomtestresults.out
 	gcov -b dominion.c >> randomtestresults.out
 	echo -e "----------------- dominion.c.gcno ----------------\n" >> randomtestresults.out
