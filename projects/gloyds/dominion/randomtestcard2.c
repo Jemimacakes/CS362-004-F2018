@@ -13,7 +13,7 @@
 #include <time.h>
 
 #define TESTCARD "treasure_map"
-#define NUMTESTS 5
+#define NUMTESTS 1000
 
 int chooseRandomNumPlayers()
 {

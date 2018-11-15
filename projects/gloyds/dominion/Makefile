@@ -44,7 +44,7 @@ randomtestcard1: randomtestcard1.c dominion.o rngs.o
 randomtestcard2: randomtestcard2.c dominion.o rngs.o
 	gcc -o randomtestcard2 -g randomtestcard2.c dominion.o rngs.o $(CFLAGS)
 
-randomtestresults: unittest1 unittest2 unittest3 unittest4 cardtest1 cardtest2 cardtest3 cardtest4
+randomtestresults: randomtestadventurer randomtestcard1 randomtestcard2
 	./randomtestadventurer &> randomtestresults.out
 	./randomtestcard1 &> randomtestresults.out
 	./randomtestcard2 &> randomtestresults.out
