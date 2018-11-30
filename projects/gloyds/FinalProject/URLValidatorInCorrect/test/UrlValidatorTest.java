@@ -3,6 +3,7 @@ import junit.framework.TestCase;
 
 public class UrlValidatorTest extends TestCase {
 
+	// Scheme segment test values
 	ResultPair[] schemePair = {
 		new ResultPair("http://", true),
 		new ResultPair("https://", true),
@@ -17,6 +18,7 @@ public class UrlValidatorTest extends TestCase {
 		new ResultPair("", false)
 	};
 
+	// User info segment test values
 	ResultPair[] userInfoPair = {
 		new ResultPair("", true),
 		new ResultPair("username@", true),
@@ -24,6 +26,7 @@ public class UrlValidatorTest extends TestCase {
 		new ResultPair("username:password@", true)
 	};
 
+	// Host segment test values
 	ResultPair[] hostPair = {
 		new ResultPair("www.google.com", true),
 		new ResultPair("oregonstate.edu", true),
@@ -36,6 +39,7 @@ public class UrlValidatorTest extends TestCase {
 		new ResultPair("", false)
 	};
 
+	// Port segment test values
 	ResultPair[] portPair = {
 		new ResultPair("", true),
 		new ResultPair(":80", true),
@@ -46,6 +50,7 @@ public class UrlValidatorTest extends TestCase {
 		new ResultPair(":8e", false)
 	};
 
+	// Path segment test values
 	ResultPair[] pathPair = {
 		new ResultPair("", true),
 		new ResultPair("/myFile1", true),
@@ -55,6 +60,7 @@ public class UrlValidatorTest extends TestCase {
 		new ResultPair("/myDir2//myFile4", false)
 	};
 
+	// Query segment test values
 	ResultPair[] queryPair = {
 		new ResultPair("", true),
 		new ResultPair("?myVar=testVal", true),
@@ -62,6 +68,7 @@ public class UrlValidatorTest extends TestCase {
 		new ResultPair("?myVar = testVal", false),
 	};
 
+	// Combined test value object
 	Object[] URLPairs = {schemePair, userInfoPair, hostPair, portPair, pathPair, queryPair};
 
 	public UrlValidatorTest(String testName) {
@@ -83,6 +90,11 @@ public class UrlValidatorTest extends TestCase {
 
 	}
 
+	/*********************************************************************
+	 * Function: testIsValid
+	 * Purpose: testIsValid runs through all possible combinations of
+	 *			each test segment and tests it using UrlValidator.isValid.
+	 *********************************************************************/
 	public void testIsValid()
 	{
 		int testIter = 1; // Test iteration counter
